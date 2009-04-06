@@ -42,25 +42,18 @@ class ParserTestCase(unittest.TestCase):
     def testParser(self):
         OUT = ('simple', '', {})
         self.assertEqual(parse_inline('simple'), OUT)
-
         OUT = ('with', 'a value', {})
         self.assertEqual(parse_inline('with a value'), OUT)
-    
         OUT = ('with', 'a value', {'and': 'args'})
         self.assertEqual(parse_inline('with a value and=args'), OUT)
-
         OUT = ('with', '', {'just': 'args'})
         self.assertEqual(parse_inline('with just=args'), OUT)
-
         OUT = ('with', 'complex value http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd#top', {})
         self.assertEqual(parse_inline('with complex value http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd#top'), OUT)
-
         OUT = ('with', 'complex value http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd#top', {'and': 'args'})
         self.assertEqual(parse_inline('with complex value http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd#top and=args'), OUT)
-
         OUT = ('with', 'a value', {'varient': 'varient', 'and': 'args', 'more': 'arg'})
         self.assertEqual(parse_inline('with:varient a value and=args more=arg'), OUT)
-
         OUT = ('with', '', {'varient': 'avarient'})
         self.assertEqual(parse_inline('with:avarient'), OUT)
     
