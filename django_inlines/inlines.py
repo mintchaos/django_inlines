@@ -1,4 +1,6 @@
 import re
+from django.template.loader import render_to_string
+from django.template import Context, RequestContext
 
 INLINE_SPLITTER = re.compile(r"""
     (?P<name>[a-z_]+)           # Must start with a lowercase + underscores name
@@ -55,12 +57,16 @@ class TemplateInline(object):
     A base class for overriding to provide templated inlines.
     The `get_context` method is the only required override. It should return 
     dictionary-like object that will be fed to the template as the context.
+    
+    If if you initate your inline class with a context instance or reqest object
+    it'll use that to set up your base context.
     """
-    def __init__(self, value, varient=None, request=None, template_dir="inlines", **kwargs):
+    def __init__(self, value, varient=None, request=None, context=None, template_dir="inlines", **kwargs):
         self.value = value
         self.varient = varient
         self.template_dir = template_dir.strip('/')
         self.request = request
+        self.context = context
         self.kwargs = kwargs
 
     def get_context(self):
@@ -78,7 +84,15 @@ class TemplateInline(object):
         return templates
     
     def render(self):
-        raise NotImplementedError('This method must be defined in a subclass')
+        if self.context:
+            context = self.context
+        elif self.request:
+            context = RequestContext(self.request)
+        else:
+            context = Context()
+        context.update(self.kwargs)
+        context['varient'] = self.varient
+        return render_to_string(self.get_template_name(), self.get_context(), context)
 
 
 class Registry(object):
