@@ -1,5 +1,7 @@
 import unittest
 from django_inlines.inlines import Registry, InlineBase, parse_inline
+from django_inlines.samples import YoutubeInline
+from django.conf import settings
 import django_inlines.inlines 
 import doctest
 
@@ -100,6 +102,28 @@ class InlineTestCase(unittest.TestCase):
     def testRemovalOfUnassignedInline(self):
         IN = """this {{ should }} be removed"""
         OUT = """this  be removed"""
+        self.assertEqual(self.inlines.process(IN), OUT)
+
+class YoutubeTestCase(unittest.TestCase):
+    def setUp(self):
+        from os.path import dirname, join
+        template_dir = join(dirname(__file__), 'templates')
+        settings.configure(TEMPLATE_DIRS=(template_dir,),
+            TEMPLATE_LOADERS=('django.template.loaders.filesystem.load_template_source',),
+            )
+        inlines = Registry()
+        inlines.register('youtube', YoutubeInline)
+        self.inlines = inlines
+
+    def testYoutubeInlines(self):
+        IN = """{{ youtube nsBAj6eopzc }}"""
+        OUT = """<div class="youtube_video">\n<object width="480" height="295">\n  <param name="movie" value="http://www.youtube.com/v/nsBAj6eopzc&hl=en&fs=1"></param>\n  <param name="allowFullScreen" value="true"></param>\n  <param name="allowscriptaccess" value="always"></param>\n  <embed src="http://www.youtube.com/v/nsBAj6eopzc&hl=en&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="295"></embed>\n</object>  \n</div>\n"""
+        self.assertEqual(self.inlines.process(IN), OUT)
+        IN = """{{ youtube nsBAj6eopzc width=200 height=100 }}"""
+        OUT = """<div class="youtube_video">\n<object width="200" height="100">\n  <param name="movie" value="http://www.youtube.com/v/nsBAj6eopzc&hl=en&fs=1"></param>\n  <param name="allowFullScreen" value="true"></param>\n  <param name="allowscriptaccess" value="always"></param>\n  <embed src="http://www.youtube.com/v/nsBAj6eopzc&hl=en&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="200" height="100"></embed>\n</object>  \n</div>\n"""
+        self.assertEqual(self.inlines.process(IN), OUT)
+        IN = """{{ youtube http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd }}"""
+        OUT = """<div class="youtube_video">\n<object width="480" height="295">\n  <param name="movie" value="http://www.youtube.com/v/nsBAj6eopzc&hl=en&fs=1"></param>\n  <param name="allowFullScreen" value="true"></param>\n  <param name="allowscriptaccess" value="always"></param>\n  <embed src="http://www.youtube.com/v/nsBAj6eopzc&hl=en&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="295"></embed>\n</object>  \n</div>\n"""
         self.assertEqual(self.inlines.process(IN), OUT)
 
 if __name__ == '__main__':
