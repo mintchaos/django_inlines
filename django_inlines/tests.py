@@ -11,8 +11,8 @@ class QuineInline(InlineBase):
     """
     def render(self):
         bits = []
-        if self.varient:
-            bits.append(':%s' % self.varient)
+        if self.variant:
+            bits.append(':%s' % self.variant)
         else:
             bits.append('')
         if self.value:
@@ -54,10 +54,10 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(parse_inline('with complex value http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd#top'), OUT)
         OUT = ('with', 'complex value http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd#top', {'and': 'args'})
         self.assertEqual(parse_inline('with complex value http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd#top and=args'), OUT)
-        OUT = ('with', 'a value', {'varient': 'varient', 'and': 'args', 'more': 'arg'})
-        self.assertEqual(parse_inline('with:varient a value and=args more=arg'), OUT)
-        OUT = ('with', '', {'varient': 'avarient'})
-        self.assertEqual(parse_inline('with:avarient'), OUT)
+        OUT = ('with', 'a value', {'variant': 'variant', 'and': 'args', 'more': 'arg'})
+        self.assertEqual(parse_inline('with:variant a value and=args more=arg'), OUT)
+        OUT = ('with', '', {'variant': 'avariant'})
+        self.assertEqual(parse_inline('with:avariant'), OUT)
     
 
 class InlineTestCase(unittest.TestCase):
@@ -76,12 +76,12 @@ class InlineTestCase(unittest.TestCase):
         self.assertEqual(self.inlines.process(IN), OUT)
         IN = """the {{ quine with value }}
         {{ quine with=args }}
-        {{ quine:with_varient }}
+        {{ quine:with_variant }}
         {{ quine:with everything even=args }}
         """
         OUT = """the {{ quine with value }}
         {{ quine with=args }}
-        {{ quine:with_varient }}
+        {{ quine:with_variant }}
         {{ quine:with everything even=args }}
         """
         self.assertEqual(self.inlines.process(IN), OUT)

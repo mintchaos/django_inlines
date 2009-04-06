@@ -4,7 +4,7 @@ from django.template import Context, RequestContext
 
 INLINE_SPLITTER = re.compile(r"""
     (?P<name>[a-z_]+)           # Must start with a lowercase + underscores name
-    (?::(?P<varient>\w+))?      # Varient is optional, ":varient"
+    (?::(?P<variant>\w+))?      # Variant is optional, ":variant"
     (?:\s(?P<args>[^\Z]+))?      # args is everything up to the end
     """, re.VERBOSE)
 INLINE_KWARG_PARSER = re.compile(r"""
@@ -29,8 +29,8 @@ def parse_inline(text):
         kwtxt = INLINE_KWARG_PARSER.search(args).group('kwargs')
         value = re.sub("%s\Z" % kwtxt, "", args)
         value = value.strip()
-    if m.group('varient'):
-        kwargs['varient'] = m.group('varient')
+    if m.group('variant'):
+        kwargs['variant'] = m.group('variant')
     if kwtxt:
         for kws in kwtxt.split():
             k, v = kws.split('=')
@@ -44,9 +44,9 @@ class InlineBase(object):
     The `render` method is the only required override. It should return a string.
     or at least something that can be coerced into a string.
     """
-    def __init__(self, value, varient=None, **kwargs):
+    def __init__(self, value, variant=None, **kwargs):
         self.value = value
-        self.varient = varient
+        self.variant = variant
         self.kwargs = kwargs
     
     def render(self):
@@ -61,9 +61,9 @@ class TemplateInline(object):
     If if you initate your inline class with a context instance or reqest object
     it'll use that to set up your base context.
     """
-    def __init__(self, value, varient=None, request=None, context=None, template_dir="inlines", **kwargs):
+    def __init__(self, value, variant=None, request=None, context=None, template_dir="inlines", **kwargs):
         self.value = value
-        self.varient = varient
+        self.variant = variant
         self.template_dir = template_dir.strip('/')
         self.request = request
         self.context = context
@@ -79,8 +79,8 @@ class TemplateInline(object):
         templates = []
         name = self.__class__.name
         templates.append('%s/%s.html' % (self.template_dir, name))
-        if self.varient:
-            templates.append('%s/%s.%s.html' % (self.template_dir, name, self.varient))
+        if self.variant:
+            templates.append('%s/%s.%s.html' % (self.template_dir, name, self.variant))
         return templates
     
     def render(self):
@@ -91,7 +91,7 @@ class TemplateInline(object):
         else:
             context = Context()
         context.update(self.kwargs)
-        context['varient'] = self.varient
+        context['variant'] = self.variant
         return render_to_string(self.get_template_name(), self.get_context(), context)
 
 
