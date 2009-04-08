@@ -106,11 +106,6 @@ class InlineTestCase(unittest.TestCase):
 
 class YoutubeTestCase(unittest.TestCase):
     def setUp(self):
-        from os.path import dirname, join
-        template_dir = join(dirname(__file__), 'templates')
-        settings.configure(TEMPLATE_DIRS=(template_dir,),
-            TEMPLATE_LOADERS=('django.template.loaders.filesystem.load_template_source',),
-            )
         inlines = Registry()
         inlines.register('youtube', YoutubeInline)
         self.inlines = inlines
