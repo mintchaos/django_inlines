@@ -1,9 +1,6 @@
 import unittest
 from django_inlines.inlines import Registry, InlineBase, parse_inline
 from django_inlines.samples import YoutubeInline
-from django.conf import settings
-import django_inlines.inlines 
-import doctest
 
 class QuineInline(InlineBase):
     """
