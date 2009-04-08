@@ -96,9 +96,10 @@ class TemplateInline(object):
 
 
 class Registry(object):
-    
     def __init__(self):
         self._registry = {}
+        self.START_TAG = "{{"
+        self.END_TAG = "}}"
     
     def register(self, name, cls):
         if not hasattr(cls, 'render'):
@@ -119,6 +120,6 @@ class Registry(object):
                 return str(inline.render())
             except KeyError:
                 return ""
-            
-        text = re.sub(r'{{ ([^}]+) }}', render, text)
+        inline_finder = re.compile(r'%(start)s (.+?) %(end)s' % {'start':self.START_TAG, 'end':self.END_TAG})
+        text = inline_finder.sub(render, text)
         return text

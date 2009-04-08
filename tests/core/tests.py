@@ -55,7 +55,23 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(parse_inline('with:variant a value and=args more=arg'), OUT)
         OUT = ('with', '', {'variant': 'avariant'})
         self.assertEqual(parse_inline('with:avariant'), OUT)
-    
+
+class RegistrySartEndTestCase(unittest.TestCase):
+    def setUp(self):
+        inlines = Registry()
+        inlines.register('double', DoubleInline)
+        inlines.START_TAG = '<<'
+        inlines.END_TAG = '>>'
+        self.inlines = inlines
+
+    def testDifferentSartEnds(self):
+        # self.assertEqual(self.inlines.START_TAG, "<<")
+        IN = """<< double makes more  >>"""
+        OUT = """makes moremakes more"""
+        self.assertEqual(self.inlines.process(IN), OUT)
+        IN = """<< double 2 >> / << double 2 multiplier=3 >>"""
+        OUT = """4 / 6"""
+        self.assertEqual(self.inlines.process(IN), OUT)
 
 class InlineTestCase(unittest.TestCase):
     def setUp(self):
