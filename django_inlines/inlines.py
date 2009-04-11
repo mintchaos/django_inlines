@@ -61,11 +61,10 @@ class TemplateInline(object):
     If if you initate your inline class with a context instance or reqest object
     it'll use that to set up your base context.
     """
-    def __init__(self, value, variant=None, request=None, context=None, template_dir="inlines", **kwargs):
+    def __init__(self, value, variant=None, context=None, template_dir="inlines", **kwargs):
         self.value = value
         self.variant = variant
         self.template_dir = template_dir.strip('/')
-        self.request = request
         self.context = context
         self.kwargs = kwargs
 
@@ -86,14 +85,11 @@ class TemplateInline(object):
     def render(self):
         if self.context:
             context = self.context
-        elif self.request:
-            context = RequestContext(self.request)
         else:
             context = Context()
         context.update(self.kwargs)
         context['variant'] = self.variant
         return render_to_string(self.get_template_name(), self.get_context(), context)
-
 
 class Registry(object):
     def __init__(self):
