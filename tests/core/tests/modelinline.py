@@ -51,10 +51,10 @@ class InlineForModelTestCase(TestCase):
         inlines = Registry()
         self.inlines = inlines
 
-    def testModelInlines(self):
+    def testInlineForModel(self):
         self.inlines.register('user', inline_for_model(User))
         self.assertEqual(self.inlines.process("{{ user 1 }}"), "Xian")
         self.assertEqual(self.inlines.process("{{ user 1 }} vs {{ user 2 }}"), "Xian vs Evil Xian")
 
-    def testModelInlineVariants(self):
+    def testInlineForModelBadInput(self):
         self.assertRaises(ValueError, inline_for_model, "User")
