@@ -92,13 +92,13 @@ class TemplateInline(object):
     def __init__(self, value, variant=None, context=None, template_dir=None, **kwargs):
         self.value = value
         self.variant = variant
-        
-        if template_dir is None:
-            template_dir="inlines"
-        
-        self.template_dir = template_dir.strip('/').replace("'", '').replace('"', '')
         self.context = context
         self.kwargs = kwargs
+
+        self.template_dirs = []
+        if template_dir:
+            self.template_dirs.append(template_dir.strip('/').replace("'", '').replace('"', ''))
+        self.template_dirs.append('inlines')
 
     def get_context(self):
         """
@@ -109,9 +109,10 @@ class TemplateInline(object):
     def get_template_name(self):
         templates = []
         name = self.__class__.name
-        templates.append('%s/%s.html' % (self.template_dir, name))
-        if self.variant:
-            templates.insert(0, '%s/%s.%s.html' % (self.template_dir, name, self.variant))
+        for dir in self.template_dirs:
+            if self.variant:
+                templates.append('%s/%s.%s.html' % (dir, name, self.variant))
+            templates.append('%s/%s.html' % (dir, name))
         return templates
     
     def render(self):
