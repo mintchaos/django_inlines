@@ -60,6 +60,7 @@ class ProcessInlinesTestCase(TestCase):
         A if the a template in the specified dir doesn't exist it should fallback
         to using the default of inlines.
         """
+        
         from django.conf import settings
         inlines.registry.register('youtube', YoutubeInline)
         

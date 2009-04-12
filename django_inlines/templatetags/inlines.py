@@ -5,6 +5,7 @@ register = template.Library()
 
 
 class InlinesNode(template.Node):
+    
     def __init__(self, var_name, template_directory=None):
         self.var_name = template.Variable(var_name)
         self.template_directory = template_directory
@@ -34,6 +35,7 @@ def process_inlines(parser, token):
         {% process_inlines body in 'youtube_inlines' %}
     
     """
+    
     args = token.split_contents()
     
     if not len(args) in (2, 4):

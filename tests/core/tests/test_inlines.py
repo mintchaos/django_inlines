@@ -1,6 +1,7 @@
 from django_inlines.inlines import InlineBase, ModelInline
 from core.models import User
 
+
 class QuineInline(InlineBase):
     """
     A simple inline that returns itself.
@@ -17,6 +18,7 @@ class QuineInline(InlineBase):
             bits.append("%s=%s" % (k,v))
         else:
             return "{{ quine%s }}" % " ".join(bits)
+
 
 class DoubleInline(InlineBase):
     """
@@ -35,6 +37,7 @@ class DoubleInline(InlineBase):
         except ValueError:
             pass
         return value*multiplier
+
 
 class UserInline(ModelInline):
     """
