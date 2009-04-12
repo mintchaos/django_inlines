@@ -54,13 +54,17 @@ An inline can be any class that provides a `render` method and has an
 Django Inlines comes with the base inline classes you can subclass to create
 your own inlines.
 
+
 ``inlines.InlineBase``
+----------------------
 
   A base class for overriding to provide simple inlines.
   The `render` method is the only required override. It should return a string.
   or at least something that can be coerced into a string.
 
+
 ``inlines.TemplateInline``
+--------------------------
 
   A base class for overriding to provide templated inlines.
   The `get_context` method is the only required override. It should return 
@@ -78,7 +82,9 @@ subclass.
 Template inlines render a template named the same as the name they were 
 registered as. The youtube inline uses ``inlines/youtube.html``
 
+
 ``inlines.ModelInline``
+-----------------------
     
   A base class for creating inlines for Django models. The `model` class
   attribute is the only required override. It should be assigned a django
@@ -90,6 +96,12 @@ A sample model inline::
   
   class PhotoInline(inlines.Modelinline):
     model = Photo
+
+  inlines.registry.register('photo', PhotoInline)
+
+And in use::
+
+  {{ photo 1 }}
 
 ModelInlines take an object's `id` as it's only value and pass that object into 
 the context as ``object``.
