@@ -95,8 +95,11 @@ class TemplateInline(object):
     The `get_context` method is the only required override. It should return 
     dictionary-like object that will be fed to the template as the context.
     
-    If you instaniate your inline class with a context instance, it'll use
+    If you instantiate your inline class with a context instance, it'll use
     that to set up your base context.
+
+    Any extra arguments assigned to your inline are passed directly though to
+    the context.
     """
     
     def __init__(self, value, variant=None, context=None, template_dir=None, **kwargs):

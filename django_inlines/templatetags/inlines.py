@@ -25,14 +25,14 @@ class InlinesNode(template.Node):
 @register.tag
 def process_inlines(parser, token):
     """
-    Searches through the provided content and applies inlines whereever they are
-    found.
+    Searches through the provided content and applies inlines where ever they
+    are found.
     
     Example::
     
         {% process_inlines body %}
         
-        {% process_inlines body in 'youtube_inlines' %}
+        {% process_inlines body in 'inlines/sidebar' %}
     
     """
     
