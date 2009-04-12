@@ -29,6 +29,10 @@ class InlineValueError(InlineUnrenderableError):
 class InlineAttributeError(InlineUnrenderableError):
     pass
 
+class InlineNotRegisteredError(InlineUnrenderableError):
+    pass
+
+
 def parse_inline(text):
     """
     Takes a string of text from a text inline and returns a 3 tuple of 
@@ -68,7 +72,7 @@ class InlineBase(object):
     The `render` method is the only required override. It should return a string.
     or at least something that can be coerced into a string.
     """
-    def __init__(self, value, variant=None, **kwargs):
+    def __init__(self, value, variant=None, context=None, **kwargs):
         self.value = value
         self.variant = variant
         self.kwargs = kwargs
@@ -82,7 +86,7 @@ class TemplateInline(object):
     The `get_context` method is the only required override. It should return 
     dictionary-like object that will be fed to the template as the context.
     
-    If if you initate your inline class with a context instance or it'll use
+    If you instaniate your inline class with a context instance, it'll use
     that to set up your base context.
     """
     def __init__(self, value, variant=None, context=None, template_dir="inlines", **kwargs):
@@ -94,7 +98,7 @@ class TemplateInline(object):
 
     def get_context(self):
         """
-        This method should 
+        This method must be defined in a subclass 
         """
         raise NotImplementedError('This method must be defined in a subclass')
     
@@ -150,8 +154,13 @@ class Registry(object):
             raise TypeError("You may only register inlines with a `render` method")
         cls.name = name
         self._registry[name] = cls
+    
+    def unregister(self, name):
+        if not name in self._registry:
+            raise InlineNotRegisteredError("Inline '%s' not registered. Unable to remove." % name)
+        del(self._registry[name])
 
-    def process(self, text):
+    def process(self, text, context=None):
         def render(matchobj):
             text = matchobj.group(1)
             try:
@@ -160,7 +169,7 @@ class Registry(object):
                 return ""
             try:
                 cls = self._registry[name]
-                inline = cls(value, **kwargs)
+                inline = cls(value, context=context, **kwargs)
                 return str(inline.render())
             except KeyError:
                 return ""
@@ -175,3 +184,7 @@ class Registry(object):
             else:
                 return ""
         return text
+
+
+# The default registry.
+registry = Registry()
