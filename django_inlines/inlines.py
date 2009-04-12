@@ -137,12 +137,9 @@ class TemplateInline(object):
 
 class ModelInline(TemplateInline):
     """
-    A base class for overriding to provide templated inlines.
-    The `get_context` method is the only required override. It should return 
-    dictionary-like object that will be fed to the template as the context.
-    
-    If if you initate your inline class with a context instance or it'll use
-    that to set up your base context.
+    A base class for creating inlines for Django models. The `model` class
+    attribute is the only required override. It should be assigned a django
+    model class.
     """
     
     model = None
