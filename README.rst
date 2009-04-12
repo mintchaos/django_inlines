@@ -110,7 +110,7 @@ Since model inlines will be used very often there is a ``inline_for_model``
 shortcut method for this. It can be used to register models as inlines directly::
 
   from django_inlines.inlines import inline_for_model
-  inlines.registry('photo', inline_for_model(Photo))
+  inlines.registry.register('photo', inline_for_model(Photo))
 
 
 Inline syntax
@@ -120,7 +120,7 @@ Django inlines use this syntax ``{{ name[:variant] value [argument=value ...] }}
 
 ``name``
 
-  The name the inline has been register under. Template inlines use this as
+  The name the inline has been registered under. Template inlines use this as
   the base name for their templates.
   
 ``value``
