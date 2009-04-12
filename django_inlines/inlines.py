@@ -1,6 +1,8 @@
 import re
 from django.template.loader import render_to_string
 from django.template import Context, RequestContext
+from django.db.models.base import ModelBase
+from django.conf import settings
 
 INLINE_SPLITTER = re.compile(r"""
     (?P<name>[a-z_]+)           # Must start with a lowercase + underscores name
@@ -11,6 +13,21 @@ INLINE_KWARG_PARSER = re.compile(r"""
     (?P<kwargs>(?:\s?\b[a-z_]+=\w+\s?)+)?\Z # kwargs match everything at the end in groups " name=arg"
     """, re.VERBOSE)
 
+class InlineUnrenderableError(Exception):
+    """
+    Any errors that are children of this error will be silenced by inlines.process
+    unless settings.INLINE_DEBUG is true.
+    """
+    pass
+
+class InlineInputError(InlineUnrenderableError):
+    pass
+
+class InlineValueError(InlineUnrenderableError):
+    pass
+
+class InlineAttributeError(InlineUnrenderableError):
+    pass
 
 def parse_inline(text):
     """
@@ -36,6 +53,13 @@ def parse_inline(text):
             k, v = kws.split('=')
             kwargs[k] = v
     return (name, value, kwargs)
+
+def inline_for_model(model):
+    """A shortcut function to produce ModelInlines for django models"""
+    if not isinstance(model, ModelBase):
+        raise ValueError("inline_for_model requires it's argument to be a Django Model")
+    class_name = "%sInline" % model._meta.module_name.capitalize()
+    return type(class_name, (ModelInline,), dict(model=model))
 
 
 class InlineBase(object):
@@ -79,7 +103,7 @@ class TemplateInline(object):
         name = self.__class__.name
         templates.append('%s/%s.html' % (self.template_dir, name))
         if self.variant:
-            templates.append('%s/%s.%s.html' % (self.template_dir, name, self.variant))
+            templates.insert(0, '%s/%s.%s.html' % (self.template_dir, name, self.variant))
         return templates
     
     def render(self):
@@ -90,6 +114,30 @@ class TemplateInline(object):
         context.update(self.kwargs)
         context['variant'] = self.variant
         return render_to_string(self.get_template_name(), self.get_context(), context)
+
+class ModelInline(TemplateInline):
+    """
+    A base class for overriding to provide templated inlines.
+    The `get_context` method is the only required override. It should return 
+    dictionary-like object that will be fed to the template as the context.
+    
+    If if you initate your inline class with a context instance or it'll use
+    that to set up your base context.
+    """
+    model = None
+
+    def get_context(self):
+        model = self.__class__.model
+        if not isinstance(model, ModelBase):
+            raise InlineAttributeError('ModelInline requires model to be set to a django model class')
+        try:
+            value = int(self.value)
+            object = model.objects.get(pk=value)
+        except ValueError:
+            raise InlineInputError("'%s' could not be converted to an int" % self.value)
+        except model.DoesNotExist:
+            raise InlineInputError("'%s' could not be found in %s.%s" % (self.value, model._meta.app_label, model._meta.module_name))
+        return { 'object': object }
 
 class Registry(object):
     def __init__(self):
@@ -117,5 +165,13 @@ class Registry(object):
             except KeyError:
                 return ""
         inline_finder = re.compile(r'%(start)s (.+?) %(end)s' % {'start':self.START_TAG, 'end':self.END_TAG})
-        text = inline_finder.sub(render, text)
+        try:
+            text = inline_finder.sub(render, text)
+        # Silence any InlineUnrenderableErrors unless INLINE_DEBUG is True
+        except InlineUnrenderableError:
+            debug = getattr(settings, "INLINE_DEBUG", False)
+            if debug:
+                raise
+            else:
+                return ""
         return text

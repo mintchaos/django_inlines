@@ -1,4 +1,5 @@
-from django_inlines.inlines import InlineBase
+from django_inlines.inlines import InlineBase, ModelInline
+from core.models import User
 
 class QuineInline(InlineBase):
     """
@@ -34,3 +35,9 @@ class DoubleInline(InlineBase):
         except ValueError:
             pass
         return value*multiplier
+
+class UserInline(ModelInline):
+    """
+    A inline for the mock user model.
+    """
+    model = User

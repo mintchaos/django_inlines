@@ -1,0 +1,22 @@
+[
+  {
+    "pk": 1,
+    "model": "core.user",
+    "fields": {
+      "name": "Xian",
+      "title": "Ponymonger",
+      "email": "xian@example.com",
+      "phone": "(708) 555-1212"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "core.user",
+    "fields": {
+      "name": "Evil Xian",
+      "title": "Ponydestroyer",
+      "email": "ex@example.com",
+      "phone": "(666) 555-1212"
+    }
+  }
+]
