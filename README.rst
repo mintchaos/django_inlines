@@ -13,8 +13,6 @@ Warning
 Django inlines is still alpha. Important bits don't exist yet. These include:
 
 * A template tag to actually be able to use them.
-* An inlinetype for django models so you don't have to manually create inline
-  classes for them.
 * Documentation.
 * Adding validation hooks to the base classes.
 * A model field and a widget for validation and improved adding in the admin.
