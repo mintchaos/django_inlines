@@ -72,7 +72,7 @@ class InlineBase(object):
     The `render` method is the only required override. It should return a string.
     or at least something that can be coerced into a string.
     """
-    def __init__(self, value, variant=None, context=None, **kwargs):
+    def __init__(self, value, variant=None, context=None, template_dir="", **kwargs):
         self.value = value
         self.variant = variant
         self.kwargs = kwargs
@@ -89,10 +89,14 @@ class TemplateInline(object):
     If you instaniate your inline class with a context instance, it'll use
     that to set up your base context.
     """
-    def __init__(self, value, variant=None, context=None, template_dir="inlines", **kwargs):
+    def __init__(self, value, variant=None, context=None, template_dir=None, **kwargs):
         self.value = value
         self.variant = variant
-        self.template_dir = template_dir.strip('/')
+        
+        if template_dir is None:
+            template_dir="inlines"
+        
+        self.template_dir = template_dir.strip('/').replace("'", '').replace('"', '')
         self.context = context
         self.kwargs = kwargs
 
@@ -160,16 +164,16 @@ class Registry(object):
             raise InlineNotRegisteredError("Inline '%s' not registered. Unable to remove." % name)
         del(self._registry[name])
 
-    def process(self, text, context=None):
+    def process(self, text, context=None, template_dir=None, **kwargs):
         def render(matchobj):
             text = matchobj.group(1)
             try:
-                name, value, kwargs = parse_inline(text)
+                name, value, inline_kwargs = parse_inline(text)
             except ValueError:
                 return ""
             try:
                 cls = self._registry[name]
-                inline = cls(value, context=context, **kwargs)
+                inline = cls(value, context=context, template_dir=template_dir, **inline_kwargs)
                 return str(inline.render())
             except KeyError:
                 return ""

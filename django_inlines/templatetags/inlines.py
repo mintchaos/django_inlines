@@ -1,5 +1,4 @@
 from django import template
-from django_inlines.inlines import registry
 
 
 register = template.Library()
@@ -12,7 +11,12 @@ class InlinesNode(template.Node):
     
     def render(self, context):
         try:
-            return registry.process(self.var_name.resolve(context))
+            from django_inlines.inlines import registry
+            
+            if self.template_directory is None:
+                return registry.process(self.var_name.resolve(context))
+            else:
+                return registry.process(self.var_name.resolve(context), template_dir=self.template_directory)
         except:
             return ''
 
@@ -22,6 +26,12 @@ def process_inlines(parser, token):
     """
     Searches through the provided content and applies inlines whereever they are
     found.
+    
+    Example::
+    
+        {% process_inlines body %}
+        
+        {% process_inlines body in 'youtube_inlines' %}
     
     """
     args = token.split_contents()
