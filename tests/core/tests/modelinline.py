@@ -31,6 +31,9 @@ class BadInputModelInlineTestCase(TestCase):
         inlines.register('user', UserInline)
         self.inlines = inlines
 
+    def tearDown(self):
+        settings.INLINE_DEBUG = False
+
     def testAgainstNonexistentObject(self):
         self.assertEqual(self.inlines.process("{{ user 111 }}"), "")
 

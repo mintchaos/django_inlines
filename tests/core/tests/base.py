@@ -1,8 +1,10 @@
 import unittest
-from django_inlines.inlines import Registry, parse_inline
-from core.tests.test_inlines import DoubleInline, QuineInline
+from django.conf import settings
+from django_inlines.inlines import Registry, parse_inline, InlineUnparsableError
+from core.tests.test_inlines import DoubleInline, QuineInline, KeyErrorInline
 
 class ParserTestCase(unittest.TestCase):
+
     def testParser(self):
         OUT = ('simple', '', {})
         self.assertEqual(parse_inline('simple'), OUT)
@@ -22,6 +24,7 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(parse_inline('with:avariant'), OUT)
 
 class RegistrySartEndTestCase(unittest.TestCase):
+
     def setUp(self):
         inlines = Registry()
         inlines.register('double', DoubleInline)
@@ -39,11 +42,15 @@ class RegistrySartEndTestCase(unittest.TestCase):
         self.assertEqual(self.inlines.process(IN), OUT)
 
 class InlineTestCase(unittest.TestCase):
+
     def setUp(self):
         inlines = Registry()
         inlines.register('quine', QuineInline)
         inlines.register('double', DoubleInline)
         self.inlines = inlines
+
+    def tearDown(self):
+        settings.INLINE_DEBUG = False
 
     def testQuineInline(self):
         IN = """{{ quine should be the same }}"""
@@ -81,3 +88,19 @@ class InlineTestCase(unittest.TestCase):
         IN = """this {{ should }} be removed"""
         OUT = """this  be removed"""
         self.assertEqual(self.inlines.process(IN), OUT)
+
+    def test_empty_inline(self):
+        IN = """this {{ 234 }} be removed"""
+        OUT = """this  be removed"""
+        self.assertEqual(self.inlines.process(IN), OUT)
+        settings.INLINE_DEBUG = True
+        self.assertRaises(InlineUnparsableError, self.inlines.process, IN)
+
+    def test_keyerrors(self):
+        """
+        A regression test to make sure KeyErrors thrown by inlines
+        aren't silenced in render anymore.
+        """
+        self.inlines.register('keyerror', KeyErrorInline)
+        IN = "{{ keyerror fail! }}"
+        self.assertRaises(KeyError, self.inlines.process, IN)

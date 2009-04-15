@@ -39,6 +39,15 @@ class DoubleInline(InlineBase):
         return value*multiplier
 
 
+class KeyErrorInline(InlineBase):
+    """
+    An inline that raises a KeyError. For regression testing.
+    """
+    def render(self):
+        empty = {}
+        return empty['this will fail']
+
+
 class UserInline(ModelInline):
     """
     A inline for the mock user model.

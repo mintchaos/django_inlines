@@ -34,6 +34,9 @@ class InlineAttributeError(InlineUnrenderableError):
 class InlineNotRegisteredError(InlineUnrenderableError):
     pass
 
+class InlineUnparsableError(InlineUnrenderableError):
+    pass
+
 
 def parse_inline(text):
     """
@@ -43,7 +46,7 @@ def parse_inline(text):
     
     m = INLINE_SPLITTER.match(text)
     if not m:
-        raise ValueError
+        raise InlineUnparsableError
     args = m.group('args')
     name = m.group('name')
     value = ""
@@ -181,27 +184,24 @@ class Registry(object):
 
     def process(self, text, context=None, template_dir=None, **kwargs):
         def render(matchobj):
-            text = matchobj.group(1)
             try:
+                text = matchobj.group(1)
                 name, value, inline_kwargs = parse_inline(text)
-            except ValueError:
-                return ""
-            try:
-                cls = self._registry[name]
+                try:
+                    cls = self._registry[name]
+                except KeyError:
+                    raise InlineNotRegisteredError('"%s" was not found as a registered inline' % name)
                 inline = cls(value, context=context, template_dir=template_dir, **inline_kwargs)
                 return str(inline.render())
-            except KeyError:
-                return ""
+            # Silence any InlineUnrenderableErrors unless INLINE_DEBUG is True
+            except InlineUnrenderableError:
+                debug = getattr(settings, "INLINE_DEBUG", False)
+                if debug:
+                    raise
+                else:
+                    return ""
         inline_finder = re.compile(r'%(start)s (.+?) %(end)s' % {'start':self.START_TAG, 'end':self.END_TAG})
-        try:
-            text = inline_finder.sub(render, text)
-        # Silence any InlineUnrenderableErrors unless INLINE_DEBUG is True
-        except InlineUnrenderableError:
-            debug = getattr(settings, "INLINE_DEBUG", False)
-            if debug:
-                raise
-            else:
-                return ""
+        text = inline_finder.sub(render, text)
         return text
 
 
