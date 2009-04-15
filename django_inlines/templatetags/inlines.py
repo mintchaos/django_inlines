@@ -6,18 +6,24 @@ register = template.Library()
 
 class InlinesNode(template.Node):
     
-    def __init__(self, var_name, template_directory=None):
+    def __init__(self, var_name, template_directory=None, asvar=None):
         self.var_name = template.Variable(var_name)
         self.template_directory = template_directory
+        self.asvar = asvar
     
     def render(self, context):
         try:
             from django_inlines.inlines import registry
             
             if self.template_directory is None:
-                return registry.process(self.var_name.resolve(context))
+                rendered = registry.process(self.var_name.resolve(context))
             else:
-                return registry.process(self.var_name.resolve(context), template_dir=self.template_directory)
+                rendered = registry.process(self.var_name.resolve(context), template_dir=self.template_directory)
+            if self.asvar:
+                context[self.asvar] = rendered
+                return ''
+            else:
+                return rendered
         except:
             return ''
 
@@ -28,26 +34,39 @@ def process_inlines(parser, token):
     Searches through the provided content and applies inlines where ever they
     are found.
     
-    Example::
+    Syntax::
     
-        {% process_inlines body %}
+        {% process_inlines entry.body [in template_dir] [as varname] }
+    
+    Examples::
+    
+        {% process_inlines entry.body %}
+
+        {% process_inlines entry.body as body %}
         
-        {% process_inlines body in 'inlines/sidebar' %}
+        {% process_inlines entry.body in 'inlines/sidebar' %}
+
+        {% process_inlines entry.body in 'inlines/sidebar' as body %}
     
     """
     
     args = token.split_contents()
     
-    if not len(args) in (2, 4):
-        raise template.TemplateSyntaxError("%r tag requires either 1 or 3 arguments." % args[0])
+    if not len(args) in (2, 4, 6):
+        raise template.TemplateSyntaxError("%r tag requires either 1, 3 or 5 arguments." % args[0])
     
     var_name = args[1]
-    template_directory = None
     
-    if len(args) == 4:
-        if args[2] != 'in':
-            raise template.TemplateSyntaxError("%r tag's second argument should be 'in' if supplying a template directory." % args[0])
-        
-        template_directory = args[3]
-    
-    return InlinesNode(var_name, template_directory)
+    ALLOWED_ARGS = ['as', 'in']
+    kwargs = { 'template_directory': None }
+    if len(args) > 2:
+        tuples = zip(*[args[2:][i::2] for i in range(2)])
+        for k,v in tuples:
+            if not k in ALLOWED_ARGS:
+                raise template.TemplateSyntaxError("%r tag options arguments must be one of %s." % (args[0], ', '.join(ALLOWED_ARGS)))
+            if k == 'in':
+                kwargs['template_directory'] = v
+            if k == 'as':
+                kwargs['asvar'] = v
+
+    return InlinesNode(var_name, **kwargs)

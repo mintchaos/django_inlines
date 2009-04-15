@@ -149,17 +149,24 @@ found. The current context of your template is passed into to your inline templa
 
 Syntax::
 
-  {% process_inlines body [in template_dir] %}
+{% process_inlines entry.body [in template_dir] [as varname] }
 
 
 Example::
 
-  {% process_inlines body %}
-    
-  {% process_inlines body in 'inlines/sidebar' %}
+  {% process_inlines entry.body %}
+
+  {% process_inlines entry.body as body %}
+
+  {% process_inlines entry.body in 'inlines/sidebar' %}
+
+  {% process_inlines entry.body in 'inlines/sidebar' as body %}
 
 If given the optional template_dir argument inlines will first check in that 
 directory for their template before falling back to ``inlines/<inline_name>.html``
+
+If given [as varname] the tag won't return anything but will instead populate
+varname in your context. Then you can apply filters or test against the output.
 
 
 To do:
