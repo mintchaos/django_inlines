@@ -137,7 +137,7 @@ Django inlines use this syntax ``{{ name[:variant] value [argument=value ...] }}
 ``arguments`` `optional`
 
   Any number of key=value pairs are allowed at the end of an inline. These
-  are pass directly to the template as context vars. 
+  are passed directly to the template as context vars.
   ``{{ youtube:hd <videourl> width=400 height=200 }}``
 
 

@@ -1,4 +1,3 @@
-# Django settings for cbc_website project.
 DATABASE_ENGINE = 'sqlite3'
 DATABASE_NAME = 'django_inlines_tests.db'
  
