@@ -1,6 +1,5 @@
 import os
-from setuptools import setup
-
+from distutils.core import setup
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -16,9 +15,10 @@ setup(
     
     author = 'Christian Metts',
     author_email = 'xian@mintchaos.com',
-    packages = ['django_inlines'],
-    install_requires = ['setuptools'],
-    
+    packages = [
+        'django_inlines',
+        'django_inlines.templatetags',
+    ],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Framework :: Django',
@@ -28,5 +28,4 @@ setup(
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP',
     ]
-    
 )

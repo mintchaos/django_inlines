@@ -1,0 +1,4 @@
+include AUTHORS
+include README.rst
+include LICENSE
+recursive-include django_inlines/templates/inlines *.html
