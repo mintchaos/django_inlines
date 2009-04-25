@@ -200,7 +200,7 @@ class Registry(object):
                     raise
                 else:
                     return ""
-        inline_finder = re.compile(r'%(start)s (.+?) %(end)s' % {'start':self.START_TAG, 'end':self.END_TAG})
+        inline_finder = re.compile(r'%(start)s\s*(.+?)\s*%(end)s' % {'start':self.START_TAG, 'end':self.END_TAG})
         text = inline_finder.sub(render, text)
         return text
 
