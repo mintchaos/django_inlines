@@ -16,7 +16,7 @@ setup(
     
     author = 'Christian Metts',
     author_email = 'xian@mintchaos.com',
-    packages = 'django_inlines',
+    packages = ['django_inlines'],
     install_requires = ['setuptools'],
     
     classifiers = [
