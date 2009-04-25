@@ -1,20 +1,20 @@
 from django import template
-
+from django.conf import settings
 
 register = template.Library()
 
 
 class InlinesNode(template.Node):
-    
+
     def __init__(self, var_name, template_directory=None, asvar=None):
         self.var_name = template.Variable(var_name)
         self.template_directory = template_directory
         self.asvar = asvar
-    
+
     def render(self, context):
         try:
             from django_inlines.inlines import registry
-            
+
             if self.template_directory is None:
                 rendered = registry.process(self.var_name.resolve(context))
             else:
@@ -25,6 +25,8 @@ class InlinesNode(template.Node):
             else:
                 return rendered
         except:
+            if getattr(settings, 'INLINE_DEBUG', False): # Should use settings.TEMPLATE_DEBUG?
+                raise
             return ''
 
 
@@ -33,30 +35,30 @@ def process_inlines(parser, token):
     """
     Searches through the provided content and applies inlines where ever they
     are found.
-    
+
     Syntax::
-    
+
         {% process_inlines entry.body [in template_dir] [as varname] }
-    
+
     Examples::
-    
+
         {% process_inlines entry.body %}
 
         {% process_inlines entry.body as body %}
-        
+
         {% process_inlines entry.body in 'inlines/sidebar' %}
 
         {% process_inlines entry.body in 'inlines/sidebar' as body %}
-    
+
     """
-    
+
     args = token.split_contents()
-    
+
     if not len(args) in (2, 4, 6):
         raise template.TemplateSyntaxError("%r tag requires either 1, 3 or 5 arguments." % args[0])
-    
+
     var_name = args[1]
-    
+
     ALLOWED_ARGS = ['as', 'in']
     kwargs = { 'template_directory': None }
     if len(args) > 2:
