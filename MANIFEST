@@ -1,0 +1,11 @@
+AUTHORS
+CHANGES.rst
+LICENSE
+README.rst
+setup.py
+django_inlines/__init__.py
+django_inlines/inlines.py
+django_inlines/samples.py
+django_inlines/templates/inlines/youtube.html
+django_inlines/templatetags/__init__.py
+django_inlines/templatetags/inlines.py
