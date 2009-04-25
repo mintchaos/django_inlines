@@ -61,7 +61,7 @@ def parse_inline(text):
     if kwtxt:
         for kws in kwtxt.split():
             k, v = kws.split('=')
-            kwargs[k] = v
+            kwargs[str(k)] = v
     return (name, value, kwargs)
 
 
