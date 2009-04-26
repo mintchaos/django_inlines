@@ -94,7 +94,7 @@ A sample model inline::
 
   from myapp.models import Photo
   
-  class PhotoInline(inlines.Modelinline):
+  class PhotoInline(inlines.ModelInline):
     model = Photo
 
   inlines.registry.register('photo', PhotoInline)
