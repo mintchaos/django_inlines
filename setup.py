@@ -9,7 +9,7 @@ CHANGES = read('CHANGES.rst')
 
 setup(
     name = "django_inlines",
-    version = "0.7.1",
+    version = "0.7.2",
     url = 'http://github.com/mintchaos/django_inlines',
     license = 'BSD',
     description = "For embedding anything you'd like into text in your django apps.",
