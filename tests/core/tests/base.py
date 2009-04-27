@@ -18,6 +18,8 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(parse_inline('with complex value http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd#top'), OUT)
         OUT = ('with', 'complex value http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd#top', {'and': 'args'})
         self.assertEqual(parse_inline('with complex value http://www.youtube.com/watch?v=nsBAj6eopzc&hd=1&feature=hd#top and=args'), OUT)
+        OUT = (u'with', u'complex value http://www.youtube.com/watch?v=nsBAj6eopzc', {'and': 'args'})
+        self.assertEqual(parse_inline(u'with complex value http://www.youtube.com/watch?v=nsBAj6eopzc and=args'), OUT)
         OUT = ('with', 'a value', {'variant': 'variant', 'and': 'args', 'more': 'arg'})
         self.assertEqual(parse_inline('with:variant a value and=args more=arg'), OUT)
         OUT = ('with', '', {'variant': 'avariant'})

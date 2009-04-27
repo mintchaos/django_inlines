@@ -7,11 +7,11 @@ from django.conf import settings
 INLINE_SPLITTER = re.compile(r"""
     (?P<name>[a-z_]+)       # Must start with a lowercase + underscores name
     (?::(?P<variant>\w+))?  # Variant is optional, ":variant"
-    (?:\s(?P<args>[^\Z]+))? # args is everything up to the end
+    (?:(?P<args>[^\Z]+))? # args is everything up to the end
     """, re.VERBOSE)
 
 INLINE_KWARG_PARSER = re.compile(r"""
-    (?P<kwargs>(?:\s?\b[a-z_]+=\w+\s?)+)?\Z # kwargs match everything at the end in groups " name=arg"
+    (?P<kwargs>(?:\s\b[a-z_]+=\w+\s?)+)?\Z # kwargs match everything at the end in groups " name=arg"
     """, re.VERBOSE)
 
 
