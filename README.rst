@@ -169,6 +169,22 @@ If given [as varname] the tag won't return anything but will instead populate
 varname in your context. Then you can apply filters or test against the output.
 
 
+Settings
+********
+
+You can override some settings within your ``settings.py``:
+
+- ``INLINE_DEBUG = True``: Normally a error with your inlines would fail silently.
+  Turning this to ``True`` would raise all exceptions your inlines might produce. 
+  Default: ``False``
+
+- ``INLINES_START_TAG = '{{'``: The start tag used in the inline syntax.
+  Default: ``'{{'``
+  
+- ``INLINES_END_TAG = '}}'``: The end tag used in the inline syntax.
+  Default: ``'}}'``
+
+
 To do:
 ******
 

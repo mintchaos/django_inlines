@@ -40,10 +40,10 @@ class InlineUnparsableError(InlineUnrenderableError):
 
 def parse_inline(text):
     """
-    Takes a string of text from a text inline and returns a 3 tuple of 
+    Takes a string of text from a text inline and returns a 3 tuple of
     (name, value, **kwargs).
     """
-    
+
     m = INLINE_SPLITTER.match(text)
     if not m:
         raise InlineUnparsableError
@@ -69,7 +69,7 @@ def inline_for_model(model):
     """
     A shortcut function to produce ModelInlines for django models
     """
-    
+
     if not isinstance(model, ModelBase):
         raise ValueError("inline_for_model requires it's argument to be a Django Model")
     class_name = "%sInline" % model._meta.module_name.capitalize()
@@ -82,12 +82,12 @@ class InlineBase(object):
     The `render` method is the only required override. It should return a string.
     or at least something that can be coerced into a string.
     """
-    
+
     def __init__(self, value, variant=None, context=None, template_dir="", **kwargs):
         self.value = value
         self.variant = variant
         self.kwargs = kwargs
-    
+
     def render(self):
         raise NotImplementedError('This method must be defined in a subclass')
 
@@ -95,16 +95,16 @@ class InlineBase(object):
 class TemplateInline(object):
     """
     A base class for overriding to provide templated inlines.
-    The `get_context` method is the only required override. It should return 
+    The `get_context` method is the only required override. It should return
     dictionary-like object that will be fed to the template as the context.
-    
+
     If you instantiate your inline class with a context instance, it'll use
     that to set up your base context.
 
     Any extra arguments assigned to your inline are passed directly though to
     the context.
     """
-    
+
     def __init__(self, value, variant=None, context=None, template_dir=None, **kwargs):
         self.value = value
         self.variant = variant
@@ -118,10 +118,10 @@ class TemplateInline(object):
 
     def get_context(self):
         """
-        This method must be defined in a subclass 
+        This method must be defined in a subclass
         """
         raise NotImplementedError('This method must be defined in a subclass')
-    
+
     def get_template_name(self):
         templates = []
         name = self.__class__.name
@@ -130,7 +130,7 @@ class TemplateInline(object):
                 templates.append('%s/%s.%s.html' % (dir, name, self.variant))
             templates.append('%s/%s.html' % (dir, name))
         return templates
-    
+
     def render(self):
         if self.context:
             context = self.context
@@ -147,7 +147,7 @@ class ModelInline(TemplateInline):
     attribute is the only required override. It should be assigned a django
     model class.
     """
-    
+
     model = None
 
     def get_context(self):
@@ -165,18 +165,18 @@ class ModelInline(TemplateInline):
 
 
 class Registry(object):
-    
+
     def __init__(self):
         self._registry = {}
-        self.START_TAG = "{{"
-        self.END_TAG = "}}"
-    
+        self.START_TAG = getattr(settings, 'INLINES_START_TAG', '{{')
+        self.END_TAG = getattr(settings, 'INLINES_END_TAG', '}}')
+
     def register(self, name, cls):
         if not hasattr(cls, 'render'):
             raise TypeError("You may only register inlines with a `render` method")
         cls.name = name
         self._registry[name] = cls
-    
+
     def unregister(self, name):
         if not name in self._registry:
             raise InlineNotRegisteredError("Inline '%s' not registered. Unable to remove." % name)
