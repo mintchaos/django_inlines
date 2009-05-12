@@ -9,7 +9,7 @@ CHANGES = read('CHANGES.rst')
 
 setup(
     name = "django_inlines",
-    version = "0.7.2",
+    version = "0.7.3",
     url = 'http://github.com/mintchaos/django_inlines',
     license = 'BSD',
     description = "For embedding anything you'd like into text in your django apps.",
@@ -21,6 +21,7 @@ setup(
         'django_inlines',
         'django_inlines.templatetags',
     ],
+    package_data={'django_inlines': ['templates/inlines/*.html']},
     classifiers = [
         'Development Status :: 4 - Beta',
         'Framework :: Django',
