@@ -9,19 +9,19 @@ CHANGES = read('CHANGES.rst')
 
 setup(
     name = "django_inlines",
-    version = "0.7.3",
+    version = "0.7.4",
     url = 'http://github.com/mintchaos/django_inlines',
     license = 'BSD',
     description = "For embedding anything you'd like into text in your django apps.",
     long_description='\n\n\n'.join([README, CHANGES]),
-    
+
     author = 'Christian Metts',
     author_email = 'xian@mintchaos.com',
     packages = [
         'django_inlines',
         'django_inlines.templatetags',
     ],
-    package_data={'django_inlines': ['templates/inlines/*.html']},
+    package_data={'django_inlines': ['templates/inlines/*.html', 'templates/admin/django_inlines/*.html', 'templates/admin/django_inlines/*.js', 'media/django_inlines/*.css', 'media/django_inlines/*.js']},
     classifiers = [
         'Development Status :: 4 - Beta',
         'Framework :: Django',

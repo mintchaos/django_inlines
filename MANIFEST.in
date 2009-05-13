@@ -2,4 +2,7 @@ include AUTHORS
 include README.rst
 include CHANGES.rst
 include LICENSE
-recursive-include django_inlines/templates/inlines *.html
+recursive-include django_inlines/templates *.html
+recursive-include django_inlines/templates *.js
+recursive-include django_inlines/media *.js
+recursive-include django_inlines/media *.css
