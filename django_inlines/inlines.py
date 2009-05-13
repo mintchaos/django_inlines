@@ -171,6 +171,10 @@ class Registry(object):
         self.START_TAG = getattr(settings, 'INLINES_START_TAG', '{{')
         self.END_TAG = getattr(settings, 'INLINES_END_TAG', '}}')
 
+    @property
+    def inline_finder(self):
+        return re.compile(r'%(start)s\s*(.+?)\s*%(end)s' % {'start':self.START_TAG, 'end':self.END_TAG})
+
     def register(self, name, cls):
         if not hasattr(cls, 'render'):
             raise TypeError("You may only register inlines with a `render` method")
@@ -200,8 +204,7 @@ class Registry(object):
                     raise
                 else:
                     return ""
-        inline_finder = re.compile(r'%(start)s\s*(.+?)\s*%(end)s' % {'start':self.START_TAG, 'end':self.END_TAG})
-        text = inline_finder.sub(render, text)
+        text = self.inline_finder.sub(render, text)
         return text
 
 

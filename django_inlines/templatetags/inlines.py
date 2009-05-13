@@ -4,6 +4,12 @@ from django.conf import settings
 register = template.Library()
 
 
+@register.filter
+def stripinlines(value):
+    from django_inlines.inlines import registry
+    return registry.inline_finder.sub('', value)
+
+
 class InlinesNode(template.Node):
 
     def __init__(self, var_name, template_directory=None, asvar=None):
