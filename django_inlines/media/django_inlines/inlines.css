@@ -1,0 +1,11 @@
+.inline_control:after { /* Clear fix */ content:  ".";   display: block;  height: 0;  clear: both;  visibility: hidden; }
+.inline_control { /* IE fix */ zoom: 1; }
+
+p.insert { float:left; margin-right:10px; }
+
+div.inlineinserter { float:left; width:500px; padding-top:3px; }
+
+div.inlineinserter p { padding:0; margin:0 0 1.3em 0;}
+div.inlineinserter .help_text { color:#666; font-size:10px; }
+div.inlineinserter label { width:6em; }
+div.inlineinserter .insert { margin-right:10px;}

@@ -65,15 +65,20 @@ def parse_inline(text):
     return (name, value, kwargs)
 
 
-def inline_for_model(model):
+def inline_for_model(model, variants=[], inline_args={}):
     """
     A shortcut function to produce ModelInlines for django models
     """
 
     if not isinstance(model, ModelBase):
         raise ValueError("inline_for_model requires it's argument to be a Django Model")
+    d = dict(model=model)
+    if variants:
+        d['variants'] = variants
+    if inline_args:
+        d['args'] = inline_args
     class_name = "%sInline" % model._meta.module_name.capitalize()
-    return type(class_name, (ModelInline,), dict(model=model))
+    return type(class_name, (ModelInline,), d)
 
 
 class InlineBase(object):
@@ -149,6 +154,11 @@ class ModelInline(TemplateInline):
     """
 
     model = None
+    help_text = "Takes the id of the desired object"
+
+    @classmethod
+    def get_app_label(self):
+        return "%s/%s" % (self.model._meta.app_label, self.model._meta.module_name)
 
     def get_context(self):
         model = self.__class__.model
