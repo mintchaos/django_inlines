@@ -22,9 +22,9 @@ class InlinesNode(template.Node):
             from django_inlines.inlines import registry
 
             if self.template_directory is None:
-                rendered = registry.process(self.var_name.resolve(context))
+                rendered = registry.process(self.var_name.resolve(context), context=context)
             else:
-                rendered = registry.process(self.var_name.resolve(context), template_dir=self.template_directory)
+                rendered = registry.process(self.var_name.resolve(context), context=context, template_dir=self.template_directory)
             if self.asvar:
                 context[self.asvar] = rendered
                 return ''

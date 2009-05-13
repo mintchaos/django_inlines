@@ -113,6 +113,15 @@ class ProcessInlinesTestCase(TestCase):
         }
         self.assertEqual(self.render(template, context), u'<p>This is my YouTube video: <div class="youtube_video">\nC_ZebDKv1zo\n</div>\n</p>')
 
+    def test_that_context_gets_passed_through(self):
+        inlines.registry.register('youtube', YoutubeInline)
+
+        template = "{% load inlines %}<p>{% with 'b' as bold %}{% process_inlines body in 'youtube_inlines' %}{% endwith %}</p>"
+        context = {
+            'body': u"This is my YouTube video: {{ youtube C_ZebDKv1zo }}",
+        }
+        self.assertEqual(self.render(template, context), u'<p>This is my YouTube video: <div class="youtube_video">\n<b>C_ZebDKv1zo</b>\n</div>\n</p>')
+
     def test_usage_with_template_dirs_fallback(self):
         """
         A if the a template in the specified dir doesn't exist it should fallback
