@@ -24,7 +24,6 @@ $(function() {
   
   $("div.inlineinserter .insert").live("click", function(){
     target = $(this).attr('rel');
-    console.log($(this).attr('rel'));
     parent = $(this).parents('div.inline_control');
     var inline_text = ""
     inline_text += parent.find('p.insert select').val();
@@ -44,6 +43,7 @@ $(function() {
 
   $("div.inlineinserter a.cancel").live("click", function(){
     $(this).parents('div.inline_control').find('p.insert select').val(['']).change();
+    return false;
   });
   
 });
