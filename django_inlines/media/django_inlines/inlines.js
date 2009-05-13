@@ -35,9 +35,11 @@ $(function() {
     inline_text += ' '
     inline_text += $('#id_'+target+'_value').val();
     parent.find('p.arg .value').each(function() {
-      inline_text += ' '+$(this).attr('rel')+'='+$(this).val();
+      if ($(this).val() != '') {
+        inline_text += ' '+$(this).attr('rel')+'='+$(this).val();
+      }
     });
-    $('#'+target).replaceSelection("{{ "+inline_text+" }}");
+    $('#'+target).replaceSelection("{{ "+inline_text+" }} ");
   });
 
   $("div.inlineinserter a.cancel").live("click", function(){
