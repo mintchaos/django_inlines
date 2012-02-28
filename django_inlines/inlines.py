@@ -144,9 +144,6 @@ class TemplateInline(object):
         context.update(self.kwargs)
         context['variant'] = self.variant
         output = render_to_string(self.get_template_name(), self.get_context(), context)
-        # apparently in order to clean up properly we have to pop exactly twice. I need
-        # to trace through this to figure out exactly what's happening here, but this works.
-        context.pop()
         context.pop()
         return output
 
